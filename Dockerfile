@@ -1,14 +1,12 @@
 FROM evarga/jenkins-slave
 MAINTAINER Marsel Taipov taipovm@gmail.com
-RUN apt-get update && apt-get install -y python3.4-venv mercurial
+RUN apt-get update && apt-get install -y python3.4-venv mercurial curl
 USER jenkins
 ENV HOME=/home/jenkins
-ADD --chown=jenkins:jenkins https://bootstrap.pypa.io/get-pip.py "${HOME}"
 
 RUN python3 -m venv --without-pip "${HOME}/bsw-env" \
     && . "${HOME}/bsw-env/bin/activate" \
-    && python3 "${HOME}/get-pip.py" \
-    && rm "${HOME}/get-pip.py" \
+    && curl https://bootstrap.pypa.io/get-pip.py | python3 \
     && pip install autopep8==1.3.2 \
                    coverage==4.3.4 \
                    factory-boy==2.8.1 \
@@ -24,6 +22,7 @@ RUN python3 -m venv --without-pip "${HOME}/bsw-env" \
                    pytest-pythonpath==0.7.1 \
                    pytest==3.0.7 \
                    requests-mock==1.2.0 \
+                   twine \
     && printf '. "$HOME/bsw-env/bin/activate"\nexport PIP_FORMAT=columns\n' >> ${HOME}/.profile
 
 USER root
